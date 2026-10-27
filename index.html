@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<script>if (sessionStorage.getItem("reviews-unlocked") !== "1") document.documentElement.classList.add("locked");</script>
+<title>Pareceres — Ideias em Rede</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Kunumi brand, same tokens as survey/templates/template.html */
+    --paper: #0A0A0B;
+    --surface: #151517;
+    --ink: #F4F3EF;
+    --ink-soft: #9C9C9E;
+    --border: #2A2A2D;
+    --accent: #E8432E;
+    --accent-soft: #2B1712;
+    --violet: #7A7EDB;
+    --violet-soft: #1C1B2E;
+    --good: #5FBF8F;
+    --good-soft: #13241C;
+    --gradient: linear-gradient(90deg, #E8432E 0%, #C74E6E 45%, #7A7EDB 100%);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--paper); color: var(--ink);
+    font-family: 'Inter', system-ui, sans-serif; line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4 { font-family: 'Space Grotesk', system-ui, sans-serif; letter-spacing: -0.01em; }
+  .mono { font-family: 'IBM Plex Mono', monospace; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code {
+    font-family: 'IBM Plex Mono', monospace; font-size: .86em;
+    background: var(--accent-soft); color: var(--accent); padding: 1px 5px; border-radius: 2px;
+  }
+  .gradient-bar { height: 3px; background: var(--gradient); }
+  .wordmark { font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px; color: var(--ink); }
+
+  .eyebrow { font-size: 13px; color: var(--ink-soft); margin: 0 0 6px; }
+  h1.page-title { font-size: 32px; font-weight: 600; margin: 4px 0 10px; line-height: 1.2; }
+  p.lede { color: var(--ink-soft); font-size: 16px; max-width: 66ch; margin: 0 0 28px; }
+
+  .tag {
+    display: inline-block; font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    padding: 3px 8px; border-radius: 2px; text-transform: uppercase; letter-spacing: .03em;
+  }
+  .tag.sev-essential { background: var(--accent); color: var(--paper); font-weight: 500; }
+  .tag.sev-important { background: var(--violet-soft); color: var(--violet); }
+  .tag.sev-nice_to_have { border: 1px solid var(--border); color: var(--ink-soft); }
+  .tag.good { background: var(--good-soft); color: var(--good); }
+
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(120px, 100%), 1fr)); gap: 12px; margin: 0 0 32px; }
+  .stat { border: 1px solid var(--border); background: var(--surface); padding: 14px 16px; }
+  .stat .n {
+    font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 600;
+    background: var(--gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .stat .l { font-size: 12.5px; color: var(--ink-soft); }
+
+  @media print {
+    :root { --paper: #fff; --surface: #fff; --ink: #111; --ink-soft: #555; --border: #ccc; --accent-soft: #fbe9e6; --violet-soft: #eceefb; --good-soft: #e6f5ed; }
+    .rail, .back-link { display: none !important; }
+    .shell { display: block !important; }
+    .card, .panel { break-inside: avoid; }
+  }
+  .gate { display: none; }
+  html.locked .page { display: none; }
+  html.locked .gate {
+    display: flex; position: fixed; inset: 0; align-items: center; justify-content: center; padding: 20px;
+  }
+  .gate-box { max-width: 320px; width: 100%; }
+  .gate-box h1 { font-size: 22px; margin: 14px 0 6px; }
+  .gate-box p { font-size: 13.5px; color: var(--ink-soft); margin: 0 0 18px; }
+  .gate-box input, .gate-box button {
+    width: 100%; font-family: 'Inter', sans-serif; font-size: 15px; padding: 10px 12px; border-radius: 3px;
+  }
+  .gate-box input { border: 1px solid var(--border); background: var(--surface); color: var(--ink); margin-bottom: 10px; }
+  .gate-box button { border: 1px solid var(--accent); background: var(--accent); color: var(--paper); font-weight: 600; cursor: pointer; }
+  .gate-error { color: var(--accent) !important; display: none; margin-top: 8px !important; }
+  
+  .wrap { max-width: 980px; margin: 0 auto; padding: 40px 24px 80px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+  .card {
+    display: block; border: 1px solid var(--border); background: var(--surface);
+    padding: 20px 22px; color: var(--ink); transition: border-color .15s;
+  }
+  .card:hover { border-color: var(--accent); text-decoration: none; }
+  .card h2 { font-size: 19px; margin: 0 0 12px; }
+  .card .counts { font-size: 13px; color: var(--ink-soft); margin: 0 0 12px; }
+  .card .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .empty { color: var(--ink-soft); }
+
+</style>
+</head>
+<body>
+<div class="gradient-bar"></div>
+
+<div class="gate">
+  <form class="gate-box" id="gateForm">
+    <span class="wordmark">kunumi</span>
+    <h1>Pareceres — Ideias em Rede</h1>
+    <p>Página de acesso restrito. Digite a senha combinada para continuar.</p>
+    <input type="password" id="gateInput" placeholder="Senha" autofocus>
+    <button type="submit">Entrar</button>
+    <p class="gate-error" id="gateError">Senha incorreta.</p>
+  </form>
+</div>
+<script>
+  // Deters casual access only: the page content is still in this HTML.
+  document.getElementById("gateForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const bytes = new TextEncoder().encode(document.getElementById("gateInput").value);
+    const digest = await crypto.subtle.digest("SHA-256", bytes);
+    const hex = Array.from(new Uint8Array(digest), b => b.toString(16).padStart(2, "0")).join("");
+    if (hex === "3cb6f6c49a47ffc70e0a0f6920e1346f26a8321572dc1e1c976389792588f88e") {
+      sessionStorage.setItem("reviews-unlocked", "1");
+      document.documentElement.classList.remove("locked");
+    } else {
+      document.getElementById("gateError").style.display = "block";
+    }
+  });
+</script>
+
+<div class="page">
+<div class="wrap">
+  <p class="wordmark">kunumi</p>
+  <p class="eyebrow">Ideias em Rede – 1ª Edição · PublicHearingBR</p>
+  <h1 class="page-title">Pareceres dos trabalhos</h1>
+  <p class="lede">Revisões construtivas de cada artigo submetido: pontos fortes, pontos de melhoria por critério do edital, perguntas que um revisor faria e próximos passos.</p>
+
+  
+  <div class="grid">
+    
+    <a class="card" href="OpenParla/">
+      <h2>OpenParla</h2>
+      <p class="counts">6 pontos fortes · 10 pontos de melhoria</p>
+      <div class="tags">
+        
+        <span class="tag sev-important">8 Importante</span>
+        
+        <span class="tag sev-nice_to_have">2 Desejável</span>
+        
+      </div>
+    </a>
+    
+  </div>
+  
+</div>
+</div>
+</body>
+</html>
