@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<script>if (sessionStorage.getItem("reviews-unlocked") !== "1") document.documentElement.classList.add("locked");</script>
+<title>Parecer — OpenParla</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Kunumi brand, same tokens as survey/templates/template.html */
+    --paper: #0A0A0B;
+    --surface: #151517;
+    --ink: #F4F3EF;
+    --ink-soft: #9C9C9E;
+    --border: #2A2A2D;
+    --accent: #E8432E;
+    --accent-soft: #2B1712;
+    --violet: #7A7EDB;
+    --violet-soft: #1C1B2E;
+    --good: #5FBF8F;
+    --good-soft: #13241C;
+    --gradient: linear-gradient(90deg, #E8432E 0%, #C74E6E 45%, #7A7EDB 100%);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--paper); color: var(--ink);
+    font-family: 'Inter', system-ui, sans-serif; line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4 { font-family: 'Space Grotesk', system-ui, sans-serif; letter-spacing: -0.01em; }
+  .mono { font-family: 'IBM Plex Mono', monospace; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code {
+    font-family: 'IBM Plex Mono', monospace; font-size: .86em;
+    background: var(--accent-soft); color: var(--accent); padding: 1px 5px; border-radius: 2px;
+  }
+  .gradient-bar { height: 3px; background: var(--gradient); }
+  .wordmark { font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px; color: var(--ink); }
+
+  .eyebrow { font-size: 13px; color: var(--ink-soft); margin: 0 0 6px; }
+  h1.page-title { font-size: 32px; font-weight: 600; margin: 4px 0 10px; line-height: 1.2; }
+  p.lede { color: var(--ink-soft); font-size: 16px; max-width: 66ch; margin: 0 0 28px; }
+
+  .tag {
+    display: inline-block; font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    padding: 3px 8px; border-radius: 2px; text-transform: uppercase; letter-spacing: .03em;
+  }
+  .tag.sev-essential { background: var(--accent); color: var(--paper); font-weight: 500; }
+  .tag.sev-important { background: var(--violet-soft); color: var(--violet); }
+  .tag.sev-nice_to_have { border: 1px solid var(--border); color: var(--ink-soft); }
+  .tag.good { background: var(--good-soft); color: var(--good); }
+
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(120px, 100%), 1fr)); gap: 12px; margin: 0 0 32px; }
+  .stat { border: 1px solid var(--border); background: var(--surface); padding: 14px 16px; }
+  .stat .n {
+    font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 600;
+    background: var(--gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .stat .l { font-size: 12.5px; color: var(--ink-soft); }
+
+  @media print {
+    :root { --paper: #fff; --surface: #fff; --ink: #111; --ink-soft: #555; --border: #ccc; --accent-soft: #fbe9e6; --violet-soft: #eceefb; --good-soft: #e6f5ed; }
+    .rail, .back-link { display: none !important; }
+    .shell { display: block !important; }
+    .card, .panel { break-inside: avoid; }
+  }
+  .gate { display: none; }
+  html.locked .page { display: none; }
+  html.locked .gate {
+    display: flex; position: fixed; inset: 0; align-items: center; justify-content: center; padding: 20px;
+  }
+  .gate-box { max-width: 320px; width: 100%; }
+  .gate-box h1 { font-size: 22px; margin: 14px 0 6px; }
+  .gate-box p { font-size: 13.5px; color: var(--ink-soft); margin: 0 0 18px; }
+  .gate-box input, .gate-box button {
+    width: 100%; font-family: 'Inter', sans-serif; font-size: 15px; padding: 10px 12px; border-radius: 3px;
+  }
+  .gate-box input { border: 1px solid var(--border); background: var(--surface); color: var(--ink); margin-bottom: 10px; }
+  .gate-box button { border: 1px solid var(--accent); background: var(--accent); color: var(--paper); font-weight: 600; cursor: pointer; }
+  .gate-error { color: var(--accent) !important; display: none; margin-top: 8px !important; }
+  
+  .shell { max-width: 1140px; margin: 0 auto; display: grid; grid-template-columns: 250px 1fr; min-height: 100vh; }
+  .rail {
+    position: sticky; top: 0; align-self: start; max-height: 100vh; overflow-y: auto;
+    padding: 32px 20px 32px 0; border-right: 1px solid var(--border);
+  }
+  .rail .back-link { display: inline-block; font-size: 13px; margin: 0 0 22px 8px; }
+  .rail a.item {
+    display: flex; gap: 10px; align-items: baseline; padding: 6px 8px; border-radius: 3px;
+    font-size: 14px; color: var(--ink-soft);
+  }
+  .rail a.item:hover { background: var(--accent-soft); color: var(--ink); text-decoration: none; }
+  .rail a.item.sub { padding-left: 28px; font-size: 13px; }
+  .rail .num { font-family: 'IBM Plex Mono', monospace; font-size: 12px; min-width: 16px; color: var(--accent); }
+  @media (max-width: 860px) {
+    .shell { grid-template-columns: minmax(0, 1fr); }
+    .rail { position: static; max-height: none; border-right: none; border-bottom: 1px solid var(--border); padding: 16px; }
+    .rail a.item.sub { display: none; }
+  }
+
+  .main { padding: 40px 36px 100px; min-width: 0; }
+  @media (max-width: 860px) { .main { padding: 24px 16px 80px; } }
+
+  section { scroll-margin-top: 20px; margin-bottom: 44px; }
+  section > h2 { font-size: 24px; margin: 0 0 16px; }
+  .criterion { scroll-margin-top: 20px; margin: 26px 0 12px; display: flex; gap: 10px; align-items: baseline; }
+  .criterion h3 { font-size: 18px; margin: 0; }
+  .criterion .weight { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--ink-soft); }
+
+  .panel { background: var(--surface); border: 1px solid var(--border); padding: 22px 24px; }
+  .panel p { margin: 0; max-width: 72ch; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); padding: 20px 22px; margin-bottom: 12px; }
+  .card.strength { border-left: 3px solid var(--good); }
+  .card.sev-essential { border-left: 3px solid var(--accent); }
+  .card.sev-important { border-left: 3px solid var(--violet); }
+  .card-head { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; margin-bottom: 10px; }
+  .card h4 { font-size: 17px; margin: 0; flex: 1 1 280px; }
+  .card .n { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--ink-soft); }
+  .card .desc { font-size: 15px; margin: 0 0 12px; max-width: 72ch; }
+  .evidence {
+    font-size: 13.5px; color: var(--ink-soft); margin: 0 0 4px; max-width: 72ch;
+    padding-left: 12px; border-left: 2px solid var(--border);
+  }
+  .evidence strong { color: var(--ink); font-weight: 500; }
+  .label {
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase;
+    letter-spacing: .06em; color: var(--ink-soft); margin: 16px 0 6px;
+  }
+  .card ul, .steps { margin: 0; padding-left: 20px; font-size: 14.5px; max-width: 72ch; }
+  .card ul li, .steps li { margin-bottom: 6px; }
+
+  .question { background: var(--surface); border: 1px solid var(--border); padding: 18px 22px; margin-bottom: 10px; }
+  .question .q { font-family: 'Space Grotesk', sans-serif; font-size: 16.5px; margin: 0 0 8px; max-width: 72ch; }
+  .question .why { font-size: 14px; color: var(--ink-soft); margin: 0; max-width: 72ch; }
+  .steps li::marker { color: var(--accent); font-family: 'IBM Plex Mono', monospace; }
+
+</style>
+</head>
+<body>
+<div class="gradient-bar"></div>
+
+<div class="gate">
+  <form class="gate-box" id="gateForm">
+    <span class="wordmark">kunumi</span>
+    <h1>Pareceres — Ideias em Rede</h1>
+    <p>Página de acesso restrito. Digite a senha combinada para continuar.</p>
+    <input type="password" id="gateInput" placeholder="Senha" autofocus>
+    <button type="submit">Entrar</button>
+    <p class="gate-error" id="gateError">Senha incorreta.</p>
+  </form>
+</div>
+<script>
+  // Deters casual access only: the page content is still in this HTML.
+  document.getElementById("gateForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const bytes = new TextEncoder().encode(document.getElementById("gateInput").value);
+    const digest = await crypto.subtle.digest("SHA-256", bytes);
+    const hex = Array.from(new Uint8Array(digest), b => b.toString(16).padStart(2, "0")).join("");
+    if (hex === "3cb6f6c49a47ffc70e0a0f6920e1346f26a8321572dc1e1c976389792588f88e") {
+      sessionStorage.setItem("reviews-unlocked", "1");
+      document.documentElement.classList.remove("locked");
+    } else {
+      document.getElementById("gateError").style.display = "block";
+    }
+  });
+</script>
+
+<div class="page">
+<div class="shell">
+  <nav class="rail">
+    <a class="back-link" href="../">← Todos os pareceres</a>
+    <a class="item" href="#resumo"><span class="num">·</span>Resumo</a>
+    <a class="item" href="#pontos-fortes"><span class="num">+</span>Pontos fortes</a>
+    
+    <a class="item" href="#pontos-de-melhoria"><span class="num">!</span>Pontos de melhoria</a>
+    
+    <a class="item sub" href="#innovation">Inovação e Originalidade (1)</a>
+    
+    <a class="item sub" href="#rigor">Rigor Metodológico (6)</a>
+    
+    <a class="item sub" href="#presentation">Qualidade da Apresentação e Código (2)</a>
+    
+    <a class="item sub" href="#impact">Impacto e Aplicabilidade (1)</a>
+    
+    
+    <a class="item" href="#perguntas"><span class="num">?</span>Perguntas do revisor</a>
+    <a class="item" href="#proximos-passos"><span class="num">→</span>Próximos passos</a>
+  </nav>
+
+  <main class="main">
+    <p class="wordmark">kunumi</p>
+    <p class="eyebrow">Ideias em Rede – 1ª Edição · Parecer de revisão</p>
+    <h1 class="page-title">OpenParla</h1>
+
+    <div class="stats">
+      <div class="stat"><div class="n">6</div><div class="l">pontos fortes</div></div>
+      <div class="stat"><div class="n">10</div><div class="l">pontos de melhoria</div></div>
+      
+      <div class="stat"><div class="n">0</div><div class="l">essencial</div></div>
+      
+      <div class="stat"><div class="n">8</div><div class="l">importante</div></div>
+      
+      <div class="stat"><div class="n">2</div><div class="l">desejável</div></div>
+      
+    </div>
+
+    <section id="resumo">
+      <h2>Resumo do trabalho</h2>
+      <div class="panel"><p>O trabalho apresenta o OpenParla, um protótipo de triagem que identifica e prioriza, no corpus PublicHearingBR, quatro tipos de sinais em falas de deputados: divergência entre fala e referência partidária, pares de falas do mesmo parlamentar potencialmente incompatíveis, tensões transversais entre pautas e falas defensivas. A proposta se alinha principalmente à Trilha B (mineração de opinião), com um recorte próprio: em vez de atribuir contradições automaticamente, cada saída é uma candidata à revisão humana acompanhada de resumo, sessão, assunto, trechos de transcrição e scores. Metodologicamente, combina embeddings multilíngues com eixos contrastivos definidos manualmente para 12 pautas (com mecanismo explícito de abstenção), recuperação por similaridade e NLI bidirecional, tudo sem uso de LLMs generativos. No recorte de 884 falas de 219 deputados em 176 sessões, o sistema sinalizou 11 itens; uma auditoria manual exploratória com um único anotador confirmou 1 deles e identificou um modo de falha concreto — pares cujas duas falas compartilham os mesmos trechos de evidência. O artigo entrega também uma interface web de inspeção rastreável aos artefatos JSON gerados.</p></div>
+    </section>
+
+    
+    <section id="pontos-fortes">
+      <h2>Pontos fortes e boas ideias</h2>
+      
+      <div class="card strength">
+        <div class="card-head">
+          <span class="n">01</span>
+          <h4>Calibração epistêmica exemplar das afirmações</h4>
+        </div>
+        <p class="desc">O trabalho é consistentemente cuidadoso em distinguir o que o sistema recupera do que o sistema prova. O resumo já alerta que as contagens &#39;correspondem apenas ao número de itens recuperados pelo pipeline, não a medidas de precisão, prevalência ou incidência de comportamento político&#39;; a Tabela 1 separa &#39;pergunta operacional&#39; de &#39;interpretação adotada&#39;; a Tabela 3 é declarada &#39;parâmetro editorial&#39;; e a Seção 7 traz uma subseção honesta de ameaças à validade. Em um domínio politicamente sensível, essa disciplina é rara em trabalhos de estudantes e sustenta diretamente o critério de Rigor Metodológico.</p>
+        <p class="evidence"><strong>Onde aparece:</strong> Resumo; Tabela 1 (coluna &#39;Interpretação adotada&#39;); Seções 4.3 e 7 (&#39;Ameaças à validade&#39;)</p>
+      </div>
+      
+      <div class="card strength">
+        <div class="card-head">
+          <span class="n">02</span>
+          <h4>Auditoria manual com protocolo pensado, incluindo itens não sinalizados</h4>
+        </div>
+        <p class="desc">A equipe não se limitou a inspecionar os positivos do sistema: auditou censo das 45 falas com pauta atribuída em T1 e amostras estratificadas de itens NÃO sinalizados em T2 e T3, o que permite discutir falsos negativos e não apenas precisão. O uso de intervalo de Wilson e a recusa explícita em estimar recall quando a amostra não permite são sinais de maturidade estatística acima do esperado em dois meses.</p>
+        <p class="evidence"><strong>Onde aparece:</strong> Seção 6.2 e Tabela 5 (colunas &#39;Não sinaliz. revisados&#39; e &#39;Positivos&#39;); Seção 7</p>
+      </div>
+      
+      <div class="card strength">
+        <div class="card-head">
+          <span class="n">03</span>
+          <h4>Descoberta e diagnóstico de um modo de falha concreto do próprio pipeline</h4>
+        </div>
+        <p class="desc">A análise de que 692 de 2.823 pares (24,5%) compartilham ao menos um trecho de evidência, e que dois dos quatro pares sinalizados eram a mesma fala segmentada em duas opiniões, é um achado genuíno sobre a estrutura do PublicHearingBR — útil para qualquer outro grupo que use a variante NLI. O artigo transforma isso em uma correção acionável (filtro de independência de evidência) em vez de esconder o resultado negativo.</p>
+        <p class="evidence"><strong>Onde aparece:</strong> Seção 3 (estatística de trechos compartilhados); Seção 7 (&#39;dois destes eram a mesma fala dividida em duas opiniões&#39;)</p>
+      </div>
+      
+      <div class="card strength">
+        <div class="card-head">
+          <span class="n">04</span>
+          <h4>Classificador de postura por eixo contrastivo com abstenção explícita</h4>
+        </div>
+        <p class="desc">A substituição de centróides ideológicos globais por eixos contrastivos específicos por pauta, com dupla condição de emissão (policy_evidence e topic_margin) e abstenção padrão, é uma decisão de projeto bem motivada e inteiramente transparente: fórmula, âncoras de exemplo, limiares e mapeamento para rótulos estão todos no texto. A alta taxa de abstenção (839/884) é apresentada como salvaguarda, não como defeito escondido.</p>
+        <p class="evidence"><strong>Onde aparece:</strong> Seção 4.2, fórmula de projeção, Tabela 2 e exemplo das âncoras da pauta &#39;armas&#39;</p>
+      </div>
+      
+      <div class="card strength">
+        <div class="card-head">
+          <span class="n">05</span>
+          <h4>Artefatos auditáveis e interface rastreável às saídas</h4>
+        </div>
+        <p class="desc">Os cinco arquivos JSON preservam, por fala, score, pauta, margens e trechos de origem; a interface estática é gerada a partir deles e declaradamente não recalcula nada, de modo que cada elemento visual tem rastro até o artefato. A marcação visual de &#39;trechos em comum&#39; mostra que o modo de falha descoberto foi incorporado à ferramenta. Isso serve bem aos critérios de Apresentação/Código e de Impacto.</p>
+        <p class="evidence"><strong>Onde aparece:</strong> Seção 5 (artefatos), Seções 6.1–6.1.4 e Figuras 2–5</p>
+      </div>
+      
+      <div class="card strength">
+        <div class="card-head">
+          <span class="n">06</span>
+          <h4>Pipeline leve, sem dependência de LLMs generativos</h4>
+        </div>
+        <p class="desc">Todo o fluxo usa apenas encoders abertos de porte moderado (E5, mpnet, mDeBERTa), o que torna a solução executável localmente, reproduzível e adequada a redações ou organizações de transparência sem orçamento de API. Trata-se de uma escolha de projeto relevante e pouco explorada em trabalhos recentes, mesmo que ainda não quantificada.</p>
+        <p class="evidence"><strong>Onde aparece:</strong> Seções 4.2 e 4.4 (modelos nomeados com identificadores exatos); Seção 8</p>
+      </div>
+      
+    </section>
+    
+
+    
+    <section id="pontos-de-melhoria">
+      <h2>Pontos de melhoria</h2>
+      
+      <div class="criterion" id="innovation">
+        <h3>Inovação e Originalidade</h3>
+        <span class="weight">40%</span>
+      </div>
+      
+      <div class="card sev-important">
+        <div class="card-head">
+          <span class="n">01</span>
+          <h4>Trabalhos relacionados descrevem ferramentas, não posicionam a contribuição</h4>
+          <span class="tag sev-important">Importante</span>
+        </div>
+        <p class="desc">A Seção 2 apresenta apenas os componentes utilizados (SBERT, XLM-R, o dataset, projeção vetorial de um livro de cálculo), sem discutir nenhum trabalho que ataque as mesmas tarefas — detecção de postura em discurso político, detecção de contradição via NLI, escalonamento ideológico de textos ou análise de corpora parlamentares. Como consequence, o leitor não tem como julgar o que há de novo, e a lista de cinco contribuições da Introdução descreve etapas do pipeline em vez de diferenciais.</p>
+        <p class="evidence"><strong>Onde aparece:</strong> Seção 2 inteira; lista de contribuições ao final da Seção 1; referências (apenas 4 itens, nenhum método posterior a 2020; [4] é o cartão do HuggingFace e não o artigo do PublicHearingBR)</p>
+        
+        <p class="label">Sugestões</p>
+        <ul><li>Reorganizar a Seção 2 por problema (stance detection em pt-BR, detecção de contradição/NLI, análise de corpora parlamentares), fechando cada bloco com uma frase do tipo &#39;diferentemente de X, o OpenParla Y&#39;</li><li>Citar a publicação original do PublicHearingBR e explicitar quais tarefas os autores do corpus propuseram, deixando claro que as quatro saídas da Tabela 1 são formulações próprias</li><li>Acrescentar à Introdução um parágrafo nomeando os diferenciais concretos: eixo contrastivo por pauta com abstenção, saída desenhada como candidata auditável, ausência de LLMs</li></ul>
+        
+      </div>
+      
+      
+      <div class="criterion" id="rigor">
+        <h3>Rigor Metodológico</h3>
+        <span class="weight">30%</span>
+      </div>
+      
+      <div class="card sev-important">
+        <div class="card-head">
+          <span class="n">02</span>
+          <h4>Afirmação de &#39;baixo custo computacional&#39; sem nenhuma medição</h4>
+          <span class="tag sev-important">Importante</span>
+        </div>
+        <p class="desc">A Conclusão eleva a eficiência a contribuição principal (&#39;baixo custo computacional e sem dependência de Grandes Modelos de Linguagem&#39;, &#39;mais acessível, auditável e reprodutível&#39;), mas nenhum número de hardware, tempo de execução, memória ou custo aparece em qualquer seção, e não há termo de comparação para os adjetivos comparativos. Essa é a afirmação menos sustentada de um artigo que, no restante, é bastante calibrado.</p>
+        <p class="evidence"><strong>Onde aparece:</strong> Seção 8 (Conclusão); ausência de qualquer informação de ambiente computacional na Seção 6</p>
+        
+        <p class="label">Sugestões</p>
+        <ul><li>Incluir uma tabela curta com hardware (CPU/GPU, memória), tempo total do pipeline sobre as 884 falas e tempo por estágio (E5, mpnet, mDeBERTa bidirecional)</li><li>Estimar, ainda que grosseiramente, o custo de uma alternativa com LLM sobre as mesmas 884 falas (tokens/chamadas) para quantificar a economia alegada</li><li>Enquanto não houver medição, reescrever a frase como &#39;pipeline baseado apenas em encoders abertos de porte moderado, executável localmente&#39;, sem o comparativo</li></ul>
+        
+      </div>
+      
+      <div class="card sev-important">
+        <div class="card-head">
+          <span class="n">03</span>
+          <h4>Ausência de qualquer baseline ou ablação dos componentes</h4>
+          <span class="tag sev-important">Importante</span>
+        </div>
+        <p class="desc">O artigo reconhece explicitamente que &#39;não há baseline comparado&#39;. Com isso, não é possível saber se o pipeline em dois estágios agrega valor sobre alternativas triviais, nem qual componente responde pelo comportamento observado — em particular, pela abstenção de 95% das falas e pelos 0/4 pares confirmados em T3. A decisão central do método (eixos por pauta em vez de centróides ideológicos globais) é justificada por &#39;experimentos exploratórios&#39; cujos números nunca são reportados.</p>
+        <p class="evidence"><strong>Onde aparece:</strong> Seção 6.2 (&#39;não há baseline comparado&#39;); Seção 4.2 (&#39;Experimentos exploratórios mostraram...&#39;); Tabela 5, que contém apenas o sistema completo</p>
+        
+        <p class="label">Sugestões</p>
+        <ul><li>Reportar os números dos experimentos exploratórios como ablação: centróides globais vs. eixos por pauta, com e sem centróide neutro, sobre as mesmas 884 falas</li><li>Em T3, comparar o pipeline completo com o estágio 1 isolado (só similaridade) e com ranking por TF-IDF, contando quantos candidatos cada um produz e quantos o anotador confirma</li><li>Em T2, contrastar a lista atual de padrões lexicais com uma lista ampliada sobre a mesma amostra, verificando se os 2 positivos não sinalizados seriam recuperados</li></ul>
+        
+      </div>
+      
+      <div class="card sev-important">
+        <div class="card-head">
+          <span class="n">04</span>
+          <h4>Qualidade do aterramento dos trechos de evidência nunca é avaliada</h4>
+          <span class="tag sev-important">Importante</span>
+        </div>
+        <p class="desc">A auditabilidade é a contribuição central do trabalho, mas os &#39;trechos_transcricao&#39; são herdados do dataset como &#39;chunks_proximos&#39; recuperados por similaridade com o resumo, e o artigo não verifica se o trecho exibido de fato contém a fala resumida nem se pertence ao parlamentar correto. O próprio paper mostra que a camada de evidência é ruidosa (24,5% de trechos compartilhados), e isso é especialmente sensível em T2, onde padrões lexicais são aplicados ao &#39;resumo concatenado aos trechos&#39; — uma negação presente no trecho pode ser de outro orador.</p>
+        <p class="evidence"><strong>Onde aparece:</strong> Seção 3 (&#39;esses trechos são recuperados por similaridade com cada resumo&#39;); Seção 4.4 (padrões aplicados ao resumo concatenado aos trechos); Tabela 5 (T2: 1 confirmado de 5)</p>
+        
+        <p class="label">Sugestões</p>
+        <ul><li>Amostrar ~30 opiniões e anotar se os trechos exibidos realmente contêm a manifestação do parlamentar indicado, reportando a taxa de aterramento ao lado da precisão da Tabela 5</li><li>Restringir a detecção de falas defensivas ao resumo (ou ao trecho delimitado pelo rótulo de falante) e reexecutar T2, comparando os itens sinalizados antes e depois</li><li>Adicionar às saídas e à interface um rótulo de &#39;evidência insuficiente&#39;, distinto de &#39;neutra&#39;, para quando nenhum trecho sustentar o sinal</li></ul>
+        
+      </div>
+      
+      <div class="card sev-important">
+        <div class="card-head">
+          <span class="n">05</span>
+          <h4>Limiares e âncoras ajustados sobre o mesmo recorte avaliado</h4>
+          <span class="tag sev-important">Importante</span>
+        </div>
+        <p class="desc">Todos os parâmetros de decisão (0,015; 0,010; cortes ±0,15/±0,55; C ≥ 0,70; severidades 0,25/0,75 e 0,15/0,50; 12 pautas e suas âncoras; Tabela 3) foram escolhidos olhando as mesmas 884 falas que depois são auditadas, sem partição de desenvolvimento/avaliação. O texto admite que a divisão de faixas &#39;foi escolhida manualmente, após exploração dos dados&#39;. Isso não está listado entre as ameaças à validade e impede distinguir &#39;baixa prevalência no corpus&#39; de &#39;limiares sobreajustados a este corpus&#39; — exatamente a explicação alternativa oferecida na Discussão.</p>
+        <p class="evidence"><strong>Onde aparece:</strong> Seção 4.2 (&#39;escolhida manualmente, após exploração dos dados&#39;); Seções 4.3 e 4.4 (limiares fixados no código); Seção 7 (&#39;Ameaças à validade&#39;, que não menciona o ponto)</p>
+        
+        <p class="label">Sugestões</p>
+        <ul><li>Particionar o corpus por sessão em desenvolvimento e reserva, congelar os parâmetros no desenvolvimento e reportar a Tabela 5 separadamente para a partição reservada</li><li>Alternativa barata: reportar análise de sensibilidade (por exemplo, C ∈ {0,60; 0,70; 0,80} e variação dos cortes de pauta) mostrando como o número de candidatos e a precisão auditada mudam</li><li>Acrescentar uma frase explícita a &#39;Ameaças à validade&#39; reconhecendo o acoplamento entre ajuste de limiares e avaliação</li></ul>
+        
+      </div>
+      
+      <div class="card sev-important">
+        <div class="card-head">
+          <span class="n">06</span>
+          <h4>Classificador de postura e abstenção nunca validados diretamente</h4>
+          <span class="tag sev-important">Importante</span>
+        </div>
+        <p class="desc">O módulo que alimenta T1 e toda a vista Posição nunca é avaliado em si: não há métrica de acerto na atribuição de pauta (campo issue), nem no rótulo de postura, nem qualquer verificação de que a abstenção de 839 das 884 falas é apropriada. A auditoria T1 mede divergência fala–partido, não a correção do rótulo atribuído, e as falas neutras não foram revisadas.</p>
+        <p class="evidence"><strong>Onde aparece:</strong> Seção 4.2 (12 pautas, limiares, 839/884 neutras); Tabela 5, nota &#39;a&#39; (&#39;as 839 neutras não foram revisadas&#39;)</p>
+        
+        <p class="label">Sugestões</p>
+        <ul><li>Anotar manualmente ~80 falas (incluindo neutras) com um guia curto que defina cada rótulo da Tabela 2 e reportar acurácia separada para atribuição de pauta e para o rótulo</li><li>Construir uma curva risk–coverage variando policy_evidence e topic_margin, mostrando o trade-off entre cobertura e acerto da classificação</li><li>Reportar quantas das 839 falas neutras, em uma amostra, de fato não tratam de nenhuma das 12 pautas</li></ul>
+        
+      </div>
+      
+      <div class="card sev-nice_to_have">
+        <div class="card-head">
+          <span class="n">07</span>
+          <h4>Transferência cross-lingual do NLI não justificada nem verificada</h4>
+          <span class="tag sev-nice_to_have">Desejável</span>
+        </div>
+        <p class="desc">O score de contradição depende do mDeBERTa-v3-base-mnli-xnli, cujo treinamento de NLI (MNLI + XNLI) não inclui português; o uso em falas em pt-BR é, portanto, transferência zero-shot, o que não é discutido. Soma-se a isso que a instrução do E5 está em inglês enquanto falas e âncoras estão em português. Dado que T3 teve 0 de 24 pares confirmados, a degradação linguística é uma explicação alternativa plausível que não aparece nas ameaças à validade.</p>
+        <p class="evidence"><strong>Onde aparece:</strong> Seção 4.4 (uso do mDeBERTa-XNLI); Listing 1 (instrução em inglês); Seção 7 (&#39;Ameaças à validade&#39;)</p>
+        
+        <p class="label">Sugestões</p>
+        <ul><li>Avaliar o mDeBERTa-XNLI em uma amostra do ASSIN2-RTE ou em ~30 pares construídos manualmente em pt-BR, usando o resultado para justificar ou recalibrar o limiar 0,70</li><li>Rodar uma ablação simples com a instrução do E5 em português, medindo o impacto no número de falas classificadas e nos rótulos</li><li>Incluir a adequação linguística dos modelos entre as ameaças à validade</li></ul>
+        
+      </div>
+      
+      
+      <div class="criterion" id="presentation">
+        <h3>Qualidade da Apresentação e Código</h3>
+        <span class="weight">20%</span>
+      </div>
+      
+      <div class="card sev-important">
+        <div class="card-head">
+          <span class="n">08</span>
+          <h4>Inconsistências de notação, referências e conformidade com o template</h4>
+          <span class="tag sev-important">Importante</span>
+        </div>
+        <p class="desc">Há problemas de formatação que custam pontos sem relação com o mérito técnico: o artigo se estende até a página 12 (limite de 10); há citação não resolvida (&#39;Sentence-BERT ??&#39;); o símbolo p designa tanto a pauta quanto o rótulo de posição na mesma seção; p_{a,b} aparece na fórmula de C(a,b) sem definição; a Seção 5.1 referencia a Tabela 2 quando deveria referenciar a Tabela 4; e a Tabela 1 e a tabela de campos aparecem sem legenda numerada.</p>
+        <p class="evidence"><strong>Onde aparece:</strong> Numeração de páginas (Seções 8–9 nas páginas 11–12); Seção 4.2 (&#39;popularizada pelo Sentence-BERT ??&#39; e colisão de símbolo p); Seção 5.1 (referência cruzada incorreta)</p>
+        
+        <p class="label">Sugestões</p>
+        <ul><li>Condensar a Seção 6.1 (vistas 6.1.1–6.1.5 e Figuras 2–5 ocupam ~3 páginas) em uma subseção com figura composta, levando o restante para o repositório, e verificar se as referências contam no limite</li><li>Recompilar resolvendo a citação &#39;??&#39;, corrigir a referência Tabela 2 → Tabela 4 e numerar/legendar todas as tabelas</li><li>Reservar p para a pauta, usar outro símbolo para o valor-âncora do rótulo e definir explicitamente P_NLI(contradição | a,b) antes da fórmula de C(a,b)</li></ul>
+        
+      </div>
+      
+      <div class="card sev-important">
+        <div class="card-head">
+          <span class="n">09</span>
+          <h4>Status ambíguo do &#39;modelo ajustado&#39; e das instruções de reprodução</h4>
+          <span class="tag sev-important">Importante</span>
+        </div>
+        <p class="desc">A Seção 2 e a Tabela 6 mencionam um &#39;modelo local ajustado&#39; a partir do XLM-R, com pesos em Drive, mas nenhuma seção descreve dados de ajuste, objetivo, hiperparâmetros ou em que etapa do pipeline ele entra — a Seção 4 usa apenas modelos pré-treinados. Além disso, a Seção 9 está no tempo futuro (&#39;artefatos que devem ser disponibilizados&#39;) e a única instrução operacional é &#39;colocar os pesos em Lorenna/modelo/&#39;, um caminho pessoal; não há menção a README, ambiente, comando de execução ou ao vídeo de até 5 minutos.</p>
+        <p class="evidence"><strong>Onde aparece:</strong> Seção 2 e Tabela 6 (&#39;Pesos do modelo ajustado&#39;); Seção 9 (redação prospectiva e caminho &#39;Lorenna/modelo/&#39;)</p>
+        
+        <p class="label">Sugestões</p>
+        <ul><li>Descrever o fine-tuning (dados, objetivo, hiperparâmetros, ponto de uso) ou remover a menção se o modelo não foi usado no fluxo reportado</li><li>Adicionar ao repositório um README com requisitos, instalação com versões fixadas e um script único que regenere os cinco JSON e a Tabela 5, substituindo caminhos pessoais por configuração</li><li>Atualizar a Seção 9 para o presente, confirmando que repositório, dashboard e pesos estão públicos, e incluir o link do vídeo</li></ul>
+        
+      </div>
+      
+      
+      <div class="criterion" id="impact">
+        <h3>Impacto e Aplicabilidade</h3>
+        <span class="weight">10%</span>
+      </div>
+      
+      <div class="card sev-nice_to_have">
+        <div class="card-head">
+          <span class="n">10</span>
+          <h4>Público-alvo e uso cruzado de trilhas não explicitados</h4>
+          <span class="tag sev-nice_to_have">Desejável</span>
+        </div>
+        <p class="desc">O texto fala sempre em &#39;revisão humana&#39; e &#39;o revisor&#39; sem nomear o destinatário (jornalismo de dados, assessoria legislativa, observatórios de transparência), o que dificulta pontuar Impacto e deixa sem dono decisões como a configuração da Tabela 3. Além disso, o trabalho permanece inteiramente na Trilha B, embora disponha de infraestrutura (NLI bidirecional + trechos preservados) que serviria diretamente à auditoria notícia×transcrição da Trilha A, cujas notícias pareadas do PublicHearingBR sequer são mencionadas.</p>
+        <p class="evidence"><strong>Onde aparece:</strong> Seções 1, 5 e 6.1 (uso genérico de &#39;revisor&#39;); Seção 6.1.5 (&#39;a interface não foi avaliada com usuários&#39;); Seção 3 (notícias do corpus não mencionadas)</p>
+        
+        <p class="label">Sugestões</p>
+        <ul><li>Acrescentar à Introdução um parágrafo definindo um ou dois perfis de usuário e o fluxo de trabalho atual que o OpenParla aceleraria</li><li>Narrar um dos 11 candidatos como mini estudo de caso do ponto de vista do revisor (percurso no Dossiê, evidências consultadas, motivo do descarte)</li><li>Demonstrar ou ao menos discutir um piloto cruzado: usar o módulo de NLI para verificar, em 5–10 notícias pareadas, se as posições atribuídas aos parlamentares são sustentadas pelos trechos da audiência</li></ul>
+        
+      </div>
+      
+      
+    </section>
+    
+
+    
+    <section id="perguntas">
+      <h2>Perguntas que um revisor faria</h2>
+      
+      <div class="question">
+        <p class="q"><span class="mono" style="color:var(--accent);font-size:12px">P1</span> Qual é o limiar de similaridade usado no primeiro estágio da recuperação de pares, e quantos dos 2.823 pares chegam efetivamente ao estágio de NLI?</p>
+        <p class="why">É o parâmetro que mais determina o volume de candidatos em T3 e o único corte do pipeline que não é reportado, impedindo a replicação exata dos 4 pares sinalizados.</p>
+      </div>
+      
+      <div class="question">
+        <p class="q"><span class="mono" style="color:var(--accent);font-size:12px">P2</span> O &#39;modelo local ajustado&#39; baseado em XLM-R, citado na Seção 2 e na Tabela 6, foi efetivamente usado no fluxo reportado? Se sim, com que dados e objetivo foi treinado?</p>
+        <p class="why">Resolve uma inconsistência entre a descrição do método (que usa só modelos pré-treinados) e os artefatos declarados, afetando tanto o rigor quanto a reprodutibilidade.</p>
+      </div>
+      
+      <div class="question">
+        <p class="q"><span class="mono" style="color:var(--accent);font-size:12px">P3</span> Os 11 candidatos sinalizados permanecem os mesmos sob variações razoáveis dos limiares (por exemplo, C ∈ {0,60; 0,70; 0,80} ou cortes de pauta ±20%)?</p>
+        <p class="why">Como os limiares foram escolhidos olhando o mesmo corpus auditado, a estabilidade dos resultados é a evidência mínima de que eles não são artefato de sobreajuste.</p>
+      </div>
+      
+      <div class="question">
+        <p class="q"><span class="mono" style="color:var(--accent);font-size:12px">P4</span> Em que fração dos casos o trecho de transcrição exibido como evidência contém, de fato, a fala do parlamentar a quem a opinião é atribuída?</p>
+        <p class="why">A auditabilidade é a contribuição central do trabalho e depende inteiramente da fidelidade entre resumo e trecho, que hoje é herdada do dataset sem verificação.</p>
+      </div>
+      
+      <div class="question">
+        <p class="q"><span class="mono" style="color:var(--accent);font-size:12px">P5</span> Os 0/4 pares confirmados em T3 refletem baixa prevalência real de contradições no corpus, limiares mal calibrados ou degradação do mDeBERTa-XNLI em português?</p>
+        <p class="why">As três explicações levam a conclusões opostas sobre o valor do estágio de NLI e sobre o que deve ser corrigido primeiro.</p>
+      </div>
+      
+      <div class="question">
+        <p class="q"><span class="mono" style="color:var(--accent);font-size:12px">P6</span> Como foi construída a Tabela 3 (posicionamento atribuído aos partidos) a partir dos estatutos, e quem seria responsável por revisá-la em um uso real?</p>
+        <p class="why">Toda a tarefa T1 depende dessa referência, declarada como &#39;parâmetro editorial&#39; mas sem rastro documental nem responsável identificado.</p>
+      </div>
+      
+    </section>
+    
+
+    
+    <section id="proximos-passos">
+      <h2>Próximos passos sugeridos</h2>
+      <div class="panel"><ol class="steps"><li>Implementar e avaliar o filtro de independência de evidência já anunciado na Seção 7, reportando quantos dos 2.823 pares e dos 4 candidatos sobrevivem — é a correção de maior retorno e já está diagnosticada.</li><li>Medir e reportar o custo do pipeline (hardware, tempo total e por estágio, memória) para sustentar a afirmação de &#39;baixo custo&#39; ou, enquanto isso não existir, recalibrar a frase da Conclusão.</li><li>Adicionar pelo menos uma ablação e um baseline simples por tarefa: centróides globais vs. eixos por pauta em T1, estágio de similaridade isolado em T3, lista lexical ampliada em T2.</li><li>Validar a camada de postura e o aterramento com anotação pequena e dirigida: ~80 falas (incluindo neutras) para acurácia de pauta/rótulo e ~30 opiniões para verificar se o trecho exibido contém a fala correta.</li><li>Ajustar a conformidade formal: reduzir o artigo a 10 páginas condensando a Seção 6.1, resolver a citação &#39;??&#39;, corrigir a referência Tabela 2 → Tabela 4 e unificar a notação de p e p_{a,b}.</li><li>Reescrever a Seção 2 por problema (stance detection, NLI/contradição, análise de corpora parlamentares) e acrescentar à Introdução um parágrafo explícito de posicionamento com os diferenciais do OpenParla.</li><li>Publicar README, arquivo de ambiente e script único de reprodução (dos dados brutos aos cinco JSON e à Tabela 5), incluindo o CSV de anotações e o guia de anotação da auditoria; atualizar a Seção 9 para o tempo presente.</li><li>Nomear explicitamente os perfis de usuário visados e ilustrar o fluxo com um mini estudo de caso de um dos 11 candidatos, conectando as propriedades técnicas (execução local, sem LLM) a um cenário concreto de uso.</li></ol></div>
+    </section>
+    
+  </main>
+</div>
+</div>
+</body>
+</html>
